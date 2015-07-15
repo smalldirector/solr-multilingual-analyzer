@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Solr Multilingual Analyzer by smalldirector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Solr Multilingual Analyzer</h1>
+      <h2 class="project-tagline">A new solr multilingual index and search architecture, it can support index and search across multiple languages at the same time in the same field.</h2>
+      <a href="https://github.com/smalldirector/solr-multilingual-analyzer" class="btn">View on GitHub</a>
+      <a href="https://github.com/smalldirector/solr-multilingual-analyzer/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/smalldirector/solr-multilingual-analyzer/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p>A new solr multilingual index and search architecture, it can support index and search across multiple languages at the same time in the same field.</p>
+
+<h3>
+<a id="feature" class="anchor" href="#feature" aria-hidden="true"><span class="octicon octicon-link"></span></a>Feature</h3>
+
+<ul>
+<li>Supports any combination of languages in one field.</li>
+<li>Support true multilingual searching, including mixed-language phrases.</li>
+<li>Not require store duplicated contents per language, reduce index size.</li>
+<li>Reduce fields count to be searched per request, increasing search speed.</li>
+<li>Support language detection(<a href="https://code.google.com/p/language-detection/">language-detection</a> plugin).</li>
+<li>Easy to be used, it can be used in any solr server as a plugin.</li>
+</ul>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>To use this plugin, you need to config <code>field</code> and <code>fieldType</code> in the <code>schema.xml</code>, and config language detection in the <code>solrconfig.xml</code>.</p>
+
+<h5>
+<a id="fieldtype" class="anchor" href="#fieldtype" aria-hidden="true"><span class="octicon octicon-link"></span></a>FieldType</h5>
+
+<p>In addition to support all of solr's default attributes, such as <code>sortMissingLast</code>, <code>positionIncrementGap</code>, etc,
+we support some customize attributes for this special MultiLangField.</p>
+
+<ul>
+<li>Specify <code>class</code> value as this customize field type, <code>class="com.pleasecode.solr.schema.MultiLangField"</code>.</li>
+<li>Specify <code>fieldTypeMappings</code> value, ex, <code>en:text_en, zh-cn:text_smartcn, ja:text_ja</code>, use comma to split different field type configuration,
+and use colon to split lang code and the mapping field type which was defined in <code>schema.xml</code>.</li>
+</ul>
+
+<p>The standard of lang codes that support <a href="https://code.google.com/p/language-detection/">language-detection</a> plugin:</p>
+
+<pre><code>"af", "ar", "bg", "bn", "cs", "da", "de", "el", "en", "es", "et", "fa", "fi", "fr", "gu",
+"he", "hi", "hr", "hu", "id", "it", "ja", "kn", "ko", "lt", "lv", "mk", "ml", "mr", "ne",
+"nl", "no", "pa", "pl", "pt", "ro", "ru", "sk", "sl", "so", "sq", "sv", "sw", "ta", "te",
+"th", "tl", "tr", "uk", "ur", "vi", "zh-cn", "zh-tw"
+</code></pre>
+
+<p>The following is the example code:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">fieldType</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi_lang<span class="pl-pds">"</span></span>
+           <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>com.pleasecode.solr.schema.MultiLangField<span class="pl-pds">"</span></span>
+           <span class="pl-e">sortMissingLast</span>=<span class="pl-s"><span class="pl-pds">"</span>true<span class="pl-pds">"</span></span>
+           <span class="pl-e">removeDuplicates</span>=<span class="pl-s"><span class="pl-pds">"</span>true<span class="pl-pds">"</span></span>
+           <span class="pl-e">defaultFieldType</span>=<span class="pl-s"><span class="pl-pds">"</span>text_general<span class="pl-pds">"</span></span>
+           <span class="pl-e">fieldTypeMappings</span>=<span class="pl-s"><span class="pl-pds">"</span>en:text_en, zh-cn:text_ik, ja:text_ja<span class="pl-pds">"</span></span>/&gt;</pre></div>
+
+<h5>
+<a id="field" class="anchor" href="#field" aria-hidden="true"><span class="octicon octicon-link"></span></a>Field</h5>
+
+<p>Set type attribute of the field as MultiLangField type,</p>
+
+<p>For example:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">field</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>content<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>multi_lang<span class="pl-pds">"</span></span> <span class="pl-e">indexed</span>=<span class="pl-s"><span class="pl-pds">"</span>true<span class="pl-pds">"</span></span> <span class="pl-e">stored</span>=<span class="pl-s"><span class="pl-pds">"</span>true<span class="pl-pds">"</span></span> <span class="pl-e">omitNorms</span>=<span class="pl-s"><span class="pl-pds">"</span>true<span class="pl-pds">"</span></span>/&gt;</pre></div>
+
+<h5>
+<a id="language-identification" class="anchor" href="#language-identification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Language Identification</h5>
+
+<ul>
+<li>
+<code>multi-langid</code>: Enables/disables language detection, default is <code>true</code>.</li>
+<li>
+<code>multi-langid.fl</code>: A comma-delimited list of fields to be used in language identification. <code>Required!!!</code>
+</li>
+<li>
+<code>multi-langid.whitelist</code>: Specifies a list of allowed language identification codes.
+If you specify langid.map, you can use the whitelist to ensure that you only index documents into fields that exist in your schema.</li>
+<li>
+<code>multi-langid.fallback</code>: Specifies a language code to use if no language is detected or if no language is found in langid.fallbackFields.
+If no fallback is defined, the final language code will be an empty string, which could cause unexpected behavior.</li>
+<li>
+<code>multi-langid.threshold</code>: Specifies a threshold value between 0 and 1 that the language identification score must reach before being accepted.
+With longer text fields, a high threshold such as 0.8 will yield better results. For shorter text fields, you may need to lower the threshold. Default is <code>0.5</code>.</li>
+<li>
+<code>multi-langid.hidePreLangs</code>: If true it will hide the predefined lang codes, otherwise, it will display the lang codes. Default is <code>true</code>.</li>
+</ul>
+
+<p>The following is the example code:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">updateRequestProcessorChain</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid<span class="pl-pds">"</span></span>&gt;
+  &lt;<span class="pl-ent">processor</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>com.pleasecode.solr.langdetect.MultiLangDetectLanguageIdentifierUpdateProcessorFactory<span class="pl-pds">"</span></span>&gt;
+        &lt;<span class="pl-ent">lst</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>defaults<span class="pl-pds">"</span></span>&gt;
+            &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid<span class="pl-pds">"</span></span>&gt;true&lt;/<span class="pl-ent">str</span>&gt;
+            &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid.fl<span class="pl-pds">"</span></span>&gt;subject,content&lt;/<span class="pl-ent">str</span>&gt;
+            &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid.whitelist<span class="pl-pds">"</span></span>&gt;zh-cn,ja,en&lt;/<span class="pl-ent">str</span>&gt;
+            &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid.fallback<span class="pl-pds">"</span></span>&gt;en&lt;/<span class="pl-ent">str</span>&gt;
+            &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid.threshold<span class="pl-pds">"</span></span>&gt;0.8&lt;/<span class="pl-ent">str</span>&gt;
+            &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>multi-langid.hidePreLangs<span class="pl-pds">"</span></span>&gt;false&lt;/<span class="pl-ent">str</span>&gt;
+        &lt;/<span class="pl-ent">lst</span>&gt;
+    &lt;/<span class="pl-ent">processor</span>&gt;
+    &lt;<span class="pl-ent">processor</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>solr.LogUpdateProcessorFactory<span class="pl-pds">"</span></span> /&gt;
+    &lt;<span class="pl-ent">processor</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>solr.RunUpdateProcessorFactory<span class="pl-pds">"</span></span> /&gt;
+&lt;/<span class="pl-ent">updateRequestProcessorChain</span>&gt;
+
+&lt;<span class="pl-ent">requestHandler</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>/update<span class="pl-pds">"</span></span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>solr.UpdateRequestHandler<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">lst</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>invariants<span class="pl-pds">"</span></span>&gt;
+      &lt;<span class="pl-ent">str</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>update.chain<span class="pl-pds">"</span></span>&gt;multi-langid&lt;/<span class="pl-ent">str</span>&gt;
+    &lt;/<span class="pl-ent">lst</span>&gt;
+&lt;/<span class="pl-ent">requestHandler</span>&gt;</pre></div>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>LICENSE</h1>
+
+<p>This plugin is released under the <a href="https://github.com/smalldirector/solr-multilingual-analyzer/blob/master/LICENSE">MIT license</a>.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/smalldirector/solr-multilingual-analyzer">Solr Multilingual Analyzer</a> is maintained by <a href="https://github.com/smalldirector">smalldirector</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-65176966-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+
