@@ -90,3 +90,6 @@ The following is the example code:
     </lst>
 </requestHandler>
 ```
+
+# LICENSE
+This plugin is released under the [MIT license](https://github.com/smalldirector/solr-multilingual-analyzer/blob/master/LICENSE).
