@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.jdk>1.6</version.jdk>
-        <version.solr>4.7.0</version.solr>
+        <version.solr>8.2.0</version.solr>
         <version.junit>4.10</version.junit>
         <version.slf4j>1.6.4</version.slf4j>
         <version.hamcrest>1.2.1</version.hamcrest>
